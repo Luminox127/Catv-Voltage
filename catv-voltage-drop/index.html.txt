@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CATV AC Voltage Drop</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b1020">
+
+  <!-- iOS "Add to Home Screen" support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="CATV VDrop">
+
+  <style>
+    :root { color-scheme: dark; }
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      margin:0; background:#0b1020; color:#e5e7eb;
+    }
+    .wrap{max-width:760px;margin:0 auto;padding:18px}
+    h1{margin:6px 0 4px;font-size:22px}
+    .sub{color:#94a3b8;font-size:13px;margin:0 0 14px}
+    .card{
+      background:#111827;border:1px solid #1f2937;border-radius:14px;
+      padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.25)
+    }
+    label{display:block;margin:12px 0 6px;color:#cbd5e1;font-size:14px}
+    input,select{
+      width:100%; padding:12px; border-radius:10px;
+      border:1px solid #334155; background:#0b1226; color:#e5e7eb;
+      font-size:16px
+    }
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    .btn{
+      margin-top:14px;width:100%;padding:12px;border-radius:12px;border:0;
+      background:#2563eb;color:white;font-size:16px;font-weight:700;cursor:pointer
+    }
+    .btn:active{transform:scale(.99)}
+    .out{margin-top:14px;display:grid;gap:10px}
+    .pill{
+      padding:12px;border-radius:12px;background:#0b1226;border:1px solid #334155
+    }
+    .pill b{display:block;font-size:12px;color:#93c5fd;margin-bottom:4px}
+    .warn{border-color:#f59e0b}
+    .good{border-color:#22c55e}
+    .bad{border-color:#ef4444}
+    .muted{color:#94a3b8;font-size:13px;margin-top:10px;line-height:1.35}
+    .tiny{font-size:12px;color:#94a3b8;margin-top:8px}
+    .sep{height:1px;background:#1f2937;margin:14px 0}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:#0b1226;border:1px solid #334155;border-radius:8px;padding:2px 6px}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>CATV AC Voltage Drop</h1>
+    <p class="sub">CommScope Parameter III loop resistance @ 68°F (with temp correction). Works offline once opened.</p>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <label for="cable">Cable</label>
+          <select id="cable">
+            <option value="0.500">.500</option>
+            <option value="0.625">.625</option>
+            <option value="0.750">.750</option>
+            <option value="0.875">.875</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="material">Conductor</label>
+          <select id="material">
+            <option value="copperclad" selected>Copper Clad (typical plant)</option>
+            <option value="solidcopper">Solid Copper</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row3">
+        <div>
+          <label for="feet">Run Length (ft)</label>
+          <input id="feet" type="number" step="1" placeholder="e.g. 1400" />
+        </div>
+        <div>
+          <label for="amps">Load Current (A)</label>
+          <input id="amps" type="number" step="0.01" placeholder="e.g. 6.5" />
+        </div>
+        <div>
+          <label for="sourceV">Source VAC</label>
+          <input id="sourceV" type="number" step="0.1" value="87" />
+        </div>
+      </div>
+
+      <div class="row3">
+        <div>
+          <label for="tempF">Temperature (°F)</label>
+          <input id="tempF" type="number" step="1" value="68" />
+        </div>
+        <div>
+          <label for="limitPct">Warn if % drop ≥</label>
+          <input id="limitPct" type="number" step="0.1" value="10" />
+        </div>
+        <div>
+          <label for="minEndV">Warn if end VAC ≤</label>
+          <input id="minEndV" type="number" step="0.1" value="60" />
+        </div>
+      </div>
+
+      <button class="btn" id="calc">Calculate</button>
+
+      <div class="sep"></div>
+
+      <div class="out" id="out" style="display:none">
+        <div class="pill" id="statusPill">
+          <b>Status</b>
+          <div id="status"></div>
+          <div class="tiny" id="statusDetail"></div>
+        </div>
+
+        <div class="pill"><b>Loop Resistance Used</b><div id="rUsed"></div></div>
+        <div class="pill"><b>Voltage Drop</b><div id="vd"></div></div>
+        <div class="pill"><b>% Drop</b><div id="pct"></div></div>
+        <div class="pill"><b>Far-end Voltage</b><div id="vend"></div></div>
+      </div>
+
+      <p class="muted">
+        Math: <span class="kbd">Vdrop = I × R × (ft/1000)</span> using CommScope Nominal DC Loop Resistance.
+        Temp correction uses the note from your sheet: <span class="kbd">0.1% per °F</span> relative to 68°F.
+      </p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
